@@ -1,0 +1,27 @@
+{
+  "name": "server_side",
+  "description": "NodeJs middle layer actual combat",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "config": {
+    "port": 3000
+  },
+  "author": "guorm",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  },
+  "author": {
+    "name": "guorm",
+    "email": "adiu_1024@163.com"
+  }
+}
