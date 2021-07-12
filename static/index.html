@@ -5,6 +5,16 @@
     <title>DEMO项目</title>
   </head>
   <body>
-    
+
+    <script type="module">
+      import { createEventSource } from './utils/index.js'
+      const notice = createEventSource({
+        url: '/sse/notice',
+        name: 'notice',
+        callback(data) {
+          console.log(`Received data：${data}`)
+        }
+      })
+    </script>
   </body>
 </html>
