@@ -1,6 +1,6 @@
 /**
 * @description: 列表分组，一维数组转二维数组
-* @param {Array} data: 源数据
+* @param {Array} list: 源数据
 * @param {Number} num: 分组基数
 * @return {Array} 目标数据
 * @example
@@ -9,13 +9,13 @@
 *
 *   group([1, 2, 3, 4, 5, 6, 7, 8], 3)  // [[1, 2, 3], [4, 5, 6], [7, 8]]
 */
-export const group = (data, num) => {
-  return Array.from({ length: Math.ceil(data.length / num) }, (_, i) => data.slice(i * num, (i + 1) * num))
+export const group = (list, num) => {
+  return Array.from({ length: Math.ceil(list.length / num) }, (_, i) => list.slice(i * num, (i + 1) * num))
 }
 
 /**
 * @description: 列表归档，一维数组转二维数组
-* @param {Array} data: 源数据
+* @param {Array} list: 源数据
 * @param {String} key: 归档维度
 * @return {Array} 目标数据
 * @example
@@ -38,14 +38,14 @@ export const group = (data, num) => {
 *     ]
 *   ]
 */
-export const archive = (data, key) => {
-  const values = [...new Set(data.map(item => item[key]))]
-  return values.reduce((sets, value) => (sets.push(data.filter(item => item[key] === value)), sets), [])
+export const archive = (list, key) => {
+  const values = [...new Set(list.map(item => item[key]))]
+  return values.reduce((sets, value) => (sets.push(list.filter(item => item[key] === value)), sets), [])
 }
 
 /**
 * @description: 列表归档并分组
-* @params {Array} data: 源数据
+* @params {Array} list: 源数据
 * @params {String} key: 归档维度
 * @params {String} groupName: 组名称
 * @return {Array} 目标数据
@@ -78,9 +78,9 @@ export const archive = (data, key) => {
 *     }
 *   ]
 */
-export const subgroup = (data, key, groupName = 'options') => {
+export const subgroup = (list, key, groupName = 'options') => {
   const hash = new Map()
-  data.forEach(item => {
+  list.forEach(item => {
     const value = item[key]
     if (hash.has(value)) {
       hash.get(value)[groupName].push(item)
@@ -89,4 +89,59 @@ export const subgroup = (data, key, groupName = 'options') => {
     }
   })
   return [...hash.values()]
+}
+
+/**
+* @description: 列表转树结构
+* @param {Array} list: 源数据
+* @param {String} id: 父子节点关系
+* @param {String} pid: 父子节点关系
+* @return {Array} 目标数据
+* @example
+*
+*   const source = [
+*     { "id": 1, "name": "M1部门" },
+*     { "id": 11, "pid": 1, "name": "张三" },
+*     { "id": 12, "pid": 1, "name": "李四" },
+*     { "id": 13, "pid": 1, "name": "王五" },
+*     { "id": 2, "name": "M2部门" },
+*     { "id": 21, "pid": 2, "name": "赵六" },
+*     { "id": 22, "pid": 2, "name": "周七" },
+*     { "id": 23, "pid": 2, "name": "吴八" },
+*   ]
+*
+*   listToTree(source, 'id', 'pid')
+*
+*   [
+*     {
+*       "id": 1, "name": "M1部门",
+*       "children": [
+*         { "id": 11, "pid": 1, "name": "张三" },
+*         { "id": 12, "pid": 1, "name": "李四" },
+*         { "id": 13, "pid": 1, "name": "王五" },
+*       ]
+*     },
+*     {
+*       "id": 2, "name": "M2部门",
+*       "children": [
+*         { "id": 21, "pid": 2, "name": "赵六" },
+*         { "id": 22, "pid": 2, "name": "周七" },
+*         { "id": 23, "pid": 2, "name": "吴八" },
+*       ]
+*     }
+*   ]
+*/
+export const listToTree = (list, id = 'id', pid = 'pid') => {
+  const hash = new Map(), roots = []
+  list.forEach(item => {
+    hash.set(item[id], item)
+    const parent = hash.get(item[pid])
+    if (!parent) {
+      roots.push(item)
+    } else {
+      !parent.children && (parent.children = [])
+      parent.children.push(item)
+    }
+  })
+  return roots
 }
