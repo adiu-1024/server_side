@@ -54,3 +54,52 @@ export const createNotification = (title, options) => {
     Notification.requestPermission()
   }
 }
+
+/**
+* @description: 批量下载并发请求控制
+* @param {Array} data: 任务池
+* @param {Number} limit: 恒定并发数
+* @param {Function} complete: 回调函数，接收下载数据及业务附加数据
+* @param {Function} getProgress: 回调函数，接收下载进度及业务附加数据
+* @example
+*
+*   invariableFetch({
+*     data: [
+*       { "filename": "视频A.mp4" , url: "https://file.xxx.com/3c49473f1b9c48b58978124378bd2633" },
+*       { "filename": "视频B.mp4" , url: "https://file.xxx.com/66eab02549c54e5cba93d8f7a25a87f9" },
+*     ],
+*     limit: 4,
+*     complete({ data, blob }) {
+*       console.log('filename', data.filename)
+*     },
+*     getProgress({ data, percentage }) {
+*       console.log(`Download progress: ${percentage}`)
+*     }
+*   })
+*/
+export const invariableFetch = ({ data:list = [], limit = 4, getProgress = null, complete = () => {} }) => {
+  const queue = list.splice(0, limit)
+  while(queue.length) {
+    const { url, data } = queue.shift()
+    fetch(url)
+      .then(response => {
+        const { headers, body: stream } = response
+        return { totalSize: headers.get('Content-Length'), reader: stream.getReader() }
+      })
+      .then(async ({ totalSize, reader }) => {
+        let receiveSize = 0, chunks = []
+        while(true) {
+          const { done, value } = await reader.read()
+          if (!done) {
+            chunks.push(value)
+            receiveSize += value.length
+            getProgress && getProgress({ data, percentage: Number((receiveSize / totalSize * 100).toFixed(2))})
+          } else {
+            complete({ data, blob: new Blob(chunks) })
+            list.length && invariableFetch({ data: list, getProgress, complete, limit: 1 })
+            break
+          }
+        }
+      })
+  }
+}
