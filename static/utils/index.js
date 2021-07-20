@@ -58,7 +58,7 @@ export const createNotification = (title, options) => {
 /**
 * @description: 批量下载并发请求控制
 * @param {Array} data: 任务池
-* @param {Number} limit: 恒定并发数
+* @param {Number} limit: 恒定请求数
 * @param {Function} complete: 回调函数，接收下载数据及业务附加数据
 * @param {Function} getProgress: 回调函数，接收下载进度及业务附加数据
 * @example
