@@ -1,4 +1,28 @@
 /**
+* @description: 对象转为查询字符串
+* @params {Object} data: 源数据
+* @return {String} 目标数据
+* @example
+*
+*   serialize({ a: 1, b: 2 })  // a=1&b=2
+*/
+export const serialize = data => {
+  return Object.keys(data).map(key => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`).join('&')
+}
+
+/**
+* @description: 获取查询参数
+* @params {String} name: 查询参数名称
+* @return {String} 目标数据
+* @example
+*
+*   getQueryString('id')
+*/
+export const getQueryString = (url, name) => {
+  return (new URLSearchParams(location.search)).get(name)
+}
+
+/**
 * @description: 列表分组，一维数组转二维数组
 * @param {Array} list: 源数据
 * @param {Number} num: 分组基数
