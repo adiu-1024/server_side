@@ -18,8 +18,41 @@ export const serialize = data => {
 *
 *   getQueryString('id')
 */
-export const getQueryString = (url, name) => {
-  return (new URLSearchParams(location.search)).get(name)
+export const getQueryString = key => {
+  return (new URLSearchParams(location.search)).get(key)
+}
+
+/**
+* @description: 交集
+* @params {Array} a: 源数据
+* @params {Array} b: 源数据
+* @params {String} key: 对象数组的参照维度
+* @return {Array} 目标数据
+*/
+export const intersection = (a, b, key = null) => {
+  return a.filter(i => (key ? b.map(i => i[key]).includes(i[key]) : b.includes(i)))
+}
+
+/**
+* @description: 并集
+* @params {Array} a: 源数据
+* @params {Array} b: 源数据
+* @params {String} key: 对象数组的参照维度
+* @return {Array} 目标数据
+*/
+export const union = (a, b, key = null) => {
+  return [...a, ...b.filter(i => (key ? !a.map(i => i[key]).includes(i[key]) : !a.includes(i)))]
+}
+
+/**
+* @description: 差集
+* @params {Array} a: 源数据
+* @params {Array} b: 源数据
+* @params {String} key: 对象数组的参照维度
+* @return {Array} 目标数据
+*/
+export const difference = (a, b, key = null) => {
+  return [...a, ...b].filter(i => ![a, b].every(g => (key ? g.map(i => i[key]).includes(i[key]) : g.includes(i))))
 }
 
 /**
